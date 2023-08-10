@@ -1,5 +1,8 @@
 package xyz.mcxross.bcs.stream
 
+import xyz.mcxross.bcs.ext.toBoolean
+import xyz.mcxross.bcs.ext.toByte
+
 interface BcsDataBuffer {
   fun toByteArray(): ByteArray
 }
@@ -15,7 +18,7 @@ class BcsDataOutputBuffer : BcsDataBuffer {
   override fun toByteArray() = bytes.toByteArray()
 
   fun writeBoolean(booleanValue: Boolean) {
-    bytes.add(if (booleanValue) 1 else 0)
+    bytes.add(booleanValue.toByte())
   }
 
   fun writeByte(byteValue: Byte) {
@@ -75,10 +78,10 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
   override fun toByteArray() = byteArray
 
   fun readByte(): Byte {
-    val byte = peek()
-    skip(1)
-    return byte
+    return peek()
   }
+
+  fun readBoolean(): Boolean = peek().toBoolean()
 
   fun readShort(): Short {
     val bytes = takeNext(2)

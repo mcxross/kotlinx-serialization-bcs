@@ -14,7 +14,7 @@ class BcsDecoder(private val inputBuffer: BcsDataInputBuffer) : AbstractDecoder(
   private var elementIndex = 0
 
   override val serializersModule: SerializersModule = EmptySerializersModule()
-  override fun decodeBoolean(): Boolean = inputBuffer.readByte().toInt() != 0
+  override fun decodeBoolean(): Boolean = inputBuffer.readBoolean()
   override fun decodeByte(): Byte = inputBuffer.readByte()
   override fun decodeShort(): Short = inputBuffer.readShort()
   override fun decodeInt(): Int = inputBuffer.readInt()
