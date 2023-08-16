@@ -39,3 +39,5 @@ To deserialize an object from BCS, use the `decodeFromBinary()` function:
 ```kotlin
 val obj = Bcs.decodeFromBinary<Data>(byteArrayOf())
 ```
+
+**Note**: BCS is not a self-describing format. As such, one must know the message type and layout ahead of time in order to deserialize. 
