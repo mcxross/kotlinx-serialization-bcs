@@ -9,7 +9,7 @@ interface BcsDataBuffer {
 
 class BcsDataOutputBuffer : BcsDataBuffer {
 
-  val bytes = mutableListOf<Byte>()
+  private val bytes = mutableListOf<Byte>()
 
   fun add(byte: Byte) = bytes.add(byte)
   fun addAll(bytes: List<Byte>) = this.bytes.addAll(bytes)
@@ -23,6 +23,15 @@ class BcsDataOutputBuffer : BcsDataBuffer {
 
   fun writeByte(byteValue: Byte) {
     bytes.add(byteValue)
+  }
+
+  fun writeULEB128(value: Int) {
+    var v = value
+    while (v > 0x7F) {
+      bytes.add((v and 0x7F or 0x80).toByte())
+      v = v shr 7
+    }
+    bytes.add(v.toByte())
   }
 
   fun writeShort(shortValue: Short) = repeat(2) {
@@ -41,12 +50,7 @@ class BcsDataOutputBuffer : BcsDataBuffer {
 
   fun writeUTF(text: String) {
     val utfBytes = text.encodeToByteArray()
-    val size = utfBytes.size
-    if (size <= Short.MAX_VALUE) {
-      writeShort(size.toShort())
-    } else {
-      writeInt(size)
-    }
+    writeULEB128(utfBytes.size)
     bytes.addAll(utfBytes.toList())
   }
 }
@@ -78,10 +82,22 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
   override fun toByteArray() = byteArray
 
   fun readByte(): Byte {
-    return peek()
+    return requireNextByte()
   }
 
-  fun readBoolean(): Boolean = peek().toBoolean()
+  fun readULEB128(): Int {
+    var result = 0
+    var shift = 0
+    var byte: Int
+    do {
+      byte = requireNextByte().toInt()
+      result = result or ((byte and 0x7F) shl shift)
+      shift += 7
+    } while (byte and 0x80 != 0)
+    return result
+  }
+
+  fun readBoolean(): Boolean = readByte().toBoolean()
 
   fun readShort(): Short {
     val bytes = takeNext(2)
@@ -114,10 +130,8 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
     return Double.fromBits(bits)
   }
 
-  fun readUTF(): String {
-    val length = readShort().toInt()
-    return takeNext(length).decodeToString()
-  }
+  fun readUTF(): String = takeNext(readULEB128()).decodeToString()
+
 }
 
 internal fun ByteArray.toBcsBuffer() = BcsDataInputBuffer(this)
