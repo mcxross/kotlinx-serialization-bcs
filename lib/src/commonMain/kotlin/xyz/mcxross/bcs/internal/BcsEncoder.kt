@@ -69,7 +69,7 @@ class BcsEncoder : AbstractEncoder() {
   }
 
   override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) {
-    //TODO Implement
+    outputU32AsUleb128(index)
   }
 
   override fun <T> encodeSerializableValue(serializer: SerializationStrategy<T>, value: T) {

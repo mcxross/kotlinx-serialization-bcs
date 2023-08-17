@@ -10,7 +10,8 @@ import xyz.mcxross.bcs.exception.NotSupported
 import xyz.mcxross.bcs.stream.BcsDataInputBuffer
 
 @OptIn(ExperimentalSerializationApi::class)
-class BcsDecoder(private val inputBuffer: BcsDataInputBuffer) : AbstractDecoder() {
+class BcsDecoder(private val inputBuffer: BcsDataInputBuffer, private var elementsCount: Int = 0) :
+  AbstractDecoder() {
   private var elementIndex = 0
 
   override val serializersModule: SerializersModule = EmptySerializersModule()
@@ -24,21 +25,25 @@ class BcsDecoder(private val inputBuffer: BcsDataInputBuffer) : AbstractDecoder(
   override fun decodeChar(): Char = throw NotSupported("Not supported: serialize Char")
   override fun decodeString(): String = inputBuffer.readUTF()
   override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
-    //TODO Implement
-    return 1
+    return inputBuffer.readULEB128()
   }
 
   override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-    if (elementIndex == descriptor.elementsCount) return CompositeDecoder.DECODE_DONE
+    if (elementIndex == elementsCount) return CompositeDecoder.DECODE_DONE
     return elementIndex++
   }
 
   override fun decodeSequentially(): Boolean = true
 
-  override fun decodeCollectionSize(descriptor: SerialDescriptor): Int =
-    decodeInt().also { }
+  override fun decodeCollectionSize(descriptor: SerialDescriptor): Int {
+    return inputBuffer.peek().toInt().also {
+      inputBuffer.skip(1)
+      elementsCount = it
+    }
+  }
 
-  override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder =
-    BcsDecoder(inputBuffer)
+  override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
+    return BcsDecoder(inputBuffer, descriptor.elementsCount)
+  }
 
 }
