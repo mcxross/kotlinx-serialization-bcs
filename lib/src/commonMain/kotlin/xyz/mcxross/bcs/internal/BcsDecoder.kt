@@ -1,7 +1,9 @@
 package xyz.mcxross.bcs.internal
 
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.serialDescriptor
 import kotlinx.serialization.encoding.AbstractDecoder
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.EmptySerializersModule
@@ -27,6 +29,23 @@ class BcsDecoder(private val inputBuffer: BcsDataInputBuffer, private var elemen
   override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
     return inputBuffer.readULEB128()
   }
+
+  @Suppress("UNCHECKED_CAST")
+  override fun <T> decodeSerializableValue(
+    deserializer: DeserializationStrategy<T>,
+    previousValue: T?
+  ): T {
+    val unitDescriptor = serialDescriptor<Unit>()
+    if (deserializer.descriptor == unitDescriptor)
+      return decodeUnit() as T
+    else
+      return super.decodeSerializableValue(deserializer, previousValue)
+  }
+
+  private fun decodeUnit(): Int {
+    return inputBuffer.readULEB128()
+  }
+
 
   override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
     if (elementIndex == elementsCount) return CompositeDecoder.DECODE_DONE

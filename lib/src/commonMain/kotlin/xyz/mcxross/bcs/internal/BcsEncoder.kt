@@ -78,8 +78,9 @@ class BcsEncoder : AbstractEncoder() {
       encodeUnit(value as Unit)
     else
       super.encodeSerializableValue(serializer, value)
-
   }
 
-  private fun encodeUnit(unit: Unit) {}
+  private fun encodeUnit(unit: Unit) {
+    outputU32AsUleb128(0)
+  }
 }
