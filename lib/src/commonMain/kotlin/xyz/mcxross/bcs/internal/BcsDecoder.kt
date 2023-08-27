@@ -30,6 +30,12 @@ class BcsDecoder(private val inputBuffer: BcsDataInputBuffer, private var elemen
     return inputBuffer.readULEB128()
   }
 
+  override fun decodeNull(): Nothing? {
+    return null
+  }
+
+  override fun decodeNotNullMark(): Boolean = inputBuffer.readShort().toInt() == 1
+
   @Suppress("UNCHECKED_CAST")
   override fun <T> decodeSerializableValue(
     deserializer: DeserializationStrategy<T>,

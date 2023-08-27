@@ -38,6 +38,10 @@ class BcsEncoder : AbstractEncoder() {
     this.outputU32AsUleb128(len.toInt())
   }
 
+  override fun encodeValue(value: Any) {
+
+  }
+
   override fun encodeBoolean(value: Boolean) = output.writeBoolean(value)
 
   override fun encodeByte(value: Byte) = output.writeByte(value)
@@ -66,6 +70,10 @@ class BcsEncoder : AbstractEncoder() {
 
   override fun encodeNull() {
     encodeShort(0)
+  }
+
+  override fun encodeNotNullMark() {
+    encodeShort(1)
   }
 
   override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) {
