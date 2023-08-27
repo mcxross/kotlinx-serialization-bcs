@@ -1,4 +1,4 @@
-<h1 align="center">KMP BSC</h1>
+<h1 align="center">BCS</h1>
 
 Kotlin Multiplatform implementation of Binary Canonical Serialization (BCS) as an encoding format for
 the [kotlinx.serialization](https://kotlinlang.org/docs/serialization.html#libraries) library
@@ -16,7 +16,34 @@ the [kotlinx.serialization](https://kotlinlang.org/docs/serialization.html#libra
 
 ### Installation
 
-TBA
+#### Multiplatform
+Add the `kotlinx-serialization-bcs` dependency to the common sourceSet
+
+```kotlin
+implementation("xyz.mcxross.bcs:bcs:<$bcs_version>")
+```
+#### Platform specific (Android, JS, Native, JVM)
+Add the `kotlinx-serialization-bcs` dependency to the Project's dependency block
+
+Generic:
+
+```kotlin
+implementation("xyz.mcxross.bcs:<bcs-[platform]>:<$bcs_version>")
+```
+For example for Android and JS
+
+Android:
+
+```kotlin
+implementation("xyz.mcxross.bcs:bcs-android:<$bcs_version>")
+```
+
+JS:
+
+```kotlin
+implementation("xyz.mcxross.bcs:bcs-js:<$bcs_version>")
+```
+
 
 #### Serialization
 

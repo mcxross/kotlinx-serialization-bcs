@@ -1,10 +1,24 @@
+import java.util.*
+
 plugins {
   kotlin("multiplatform") version "1.9.0"
   kotlin("plugin.serialization") version "1.9.0"
+  id("maven-publish")
+  id("signing")
 }
 
 group = "xyz.mcxross.bcs"
-version = "0.1.0"
+version = "1.0.0"
+
+ext["signing.keyId"] = null
+
+ext["signing.password"] = null
+
+ext["signing.secretKeyRingFile"] = null
+
+ext["ossrhUsername"] = null
+
+ext["ossrhPassword"] = null
 
 repositories {
   mavenCentral()
@@ -20,14 +34,8 @@ kotlin {
       useJUnitPlatform()
     }
   }
-  js(BOTH) {
-    browser {
-      commonWebpackConfig {
-        cssSupport {
-          enabled.set(true)
-        }
-      }
-    }
+  js(IR) {
+    browser {}
   }
   val hostOs = System.getProperty("os.name")
   val isMingwX64 = hostOs.startsWith("Windows")
@@ -58,3 +66,60 @@ kotlin {
     val nativeTest by getting
   }
 }
+
+val secretPropsFile = project.rootProject.file("local.properties")
+
+if (secretPropsFile.exists()) {
+  secretPropsFile
+    .reader()
+    .use { Properties().apply { load(it) } }
+    .onEach { (name, value) -> ext[name.toString()] = value }
+} else {
+  ext["signing.keyId"] = System.getenv("SIGNING_KEY_ID")
+  ext["signing.password"] = System.getenv("SIGNING_PASSWORD")
+  ext["signing.secretKeyRingFile"] = System.getenv("SIGNING_SECRET_KEY_RING_FILE")
+  ext["ossrhUsername"] = System.getenv("OSSRH_USERNAME")
+  ext["ossrhPassword"] = System.getenv("OSSRH_PASSWORD")
+}
+
+fun getExtraString(name: String) = ext[name]?.toString()
+
+publishing {
+  repositories {
+    maven {
+      name = "sonatype"
+      setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+      credentials {
+        username = getExtraString("ossrhUsername")
+        password = getExtraString("ossrhPassword")
+      }
+    }
+  }
+
+  publications.withType<MavenPublication> {
+    pom {
+      name.set("BCS")
+      description.set(
+        "KMP implementation of the Binary Canonical Serialization (BCS) format",
+      )
+      url.set("https://github.com/mcxross")
+
+      licenses {
+        license {
+          name.set("Apache License, Version 2.0")
+          url.set("https://opensource.org/licenses/APACHE-2.0")
+        }
+      }
+      developers {
+        developer {
+          id.set("mcxross")
+          name.set("Mcxross")
+          email.set("oss@mcxross.xyz")
+        }
+      }
+      scm { url.set("https://github.com/mcxross/kotlinx-serialization-bcs") }
+    }
+  }
+}
+
+signing { sign(publishing.publications) }
