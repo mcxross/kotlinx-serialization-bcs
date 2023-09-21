@@ -15,8 +15,13 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      
+      - name: Grant Permission to Execute Gradle
+        run: chmod +x gradlew
+      
       - name: Build with Gradle
         run: ./gradlew :bcs:build
+      
       - name: Archive build artifacts
         uses: actions/upload-artifact@v3
         with:
