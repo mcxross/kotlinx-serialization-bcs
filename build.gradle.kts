@@ -1,10 +1,11 @@
 plugins {
-  kotlin("multiplatform") version "1.9.0" apply false
-  kotlin("plugin.serialization") version "1.9.0" apply false
+  kotlin("multiplatform") apply false
+  id("com.android.library") apply false
+  kotlin("plugin.serialization") apply false
 }
 
 group = "xyz.mcxross.bcs"
-version = "1.0.0"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
   mavenCentral()

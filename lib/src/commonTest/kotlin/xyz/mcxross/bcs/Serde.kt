@@ -8,6 +8,12 @@ class Serde {
   private val bcs = Bcs {}
 
   @Test
+  fun testBoolean() {
+    val encoding = bcs.encodeToBinary(true)
+    assertContentEquals(byteArrayOf(1.toByte()), encoding)
+  }
+
+  @Test
   fun testUTF() {
     val encoding = bcs.encodeToBinary("çå∞≠¢õß∂ƒ∫")
     val expected = byteArrayOf(

@@ -3,7 +3,18 @@
 Kotlin Multiplatform implementation of Binary Canonical Serialization (BCS) as an encoding format for
 the [kotlinx.serialization](https://kotlinlang.org/docs/serialization.html#libraries) library
 
+[![Kotlin Version](https://img.shields.io/badge/Kotlin-1.9.10-B125EA?logo=kotlin)](https://kotlinlang.org)
+[![Maven Central](https://img.shields.io/maven-central/v/xyz.mcxross.bcs/bcs.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/xyz.mcxross/bcs)
+[![Build Status](https://github.com/mcxross/kotlinx-serialization-bcs/workflows/Publish/badge.svg)](https://github.com/mcxross/kotlinx-serialization-bcs/actions)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+
+![badge-android](http://img.shields.io/badge/Platform-Android-brightgreen.svg?logo=android)
+![badge-ios](http://img.shields.io/badge/Platform-iOS-orange.svg?logo=apple)
+![badge-js](http://img.shields.io/badge/Platform-NodeJS-yellow.svg?logo=javascript)
+![badge-jvm](http://img.shields.io/badge/Platform-JVM-red.svg?logo=openjdk)
+![badge-linux](http://img.shields.io/badge/Platform-Linux-lightgrey.svg?logo=linux)
+![badge-macos](http://img.shields.io/badge/Platform-macOS-orange.svg?logo=apple)
+![badge-windows](http://img.shields.io/badge/Platform-Windows-blue.svg?logo=windows)
 
 ### Table of contents
 
@@ -148,7 +159,25 @@ BCS specs can be found [here](https://github.com/diem/bcs/#readme)
 
 ## Contribution
 
-All contributions to KMP BSC are welcome. Before opening a PR, please submit an issue detailing the bug or feature. When
+All contributions to KMP BCS are welcome. Before opening a PR, please submit an issue detailing the bug or feature. When
 opening a PR, please ensure that your contribution builds on the KMM toolchain, has been linted
 with `ktfmt <GOOGLE (INTERNAL)>`, and contains tests when applicable. For more information, please see
 the [contribution guidelines](CONTRIBUTING.md).
+
+## License
+
+    Copyright 2022 McXross
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+[maven-central]: https://search.maven.org/artifact/xyz.mcxross/bcs

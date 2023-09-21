@@ -2,12 +2,15 @@ package xyz.mcxross.bcs.internal
 
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.descriptors.serialDescriptor
 import kotlinx.serialization.encoding.AbstractDecoder
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
+import xyz.mcxross.bcs.MAX_CONTAINER_DEPTH
 import xyz.mcxross.bcs.exception.NotSupported
 import xyz.mcxross.bcs.stream.BcsDataInputBuffer
 
@@ -15,6 +18,8 @@ import xyz.mcxross.bcs.stream.BcsDataInputBuffer
 class BcsDecoder(private val inputBuffer: BcsDataInputBuffer, private var elementsCount: Int = 0) :
   AbstractDecoder() {
   private var elementIndex = 0
+
+  private var depth: Int = 0
 
   override val serializersModule: SerializersModule = EmptySerializersModule()
   override fun decodeBoolean(): Boolean = inputBuffer.readBoolean()
@@ -68,6 +73,17 @@ class BcsDecoder(private val inputBuffer: BcsDataInputBuffer, private var elemen
   }
 
   override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
+
+    val newDepth = when (descriptor.kind) {
+      StructureKind.CLASS, StructureKind.OBJECT -> 1 + depth
+      StructureKind.LIST, StructureKind.MAP -> depth
+      else -> throw NotSupported("Not supported: ${descriptor.kind}")
+    }
+
+    if (newDepth > MAX_CONTAINER_DEPTH.toInt()) {
+      throw SerializationException("Container depth exceeds maximum allowed depth of $MAX_CONTAINER_DEPTH")
+    }
+
     return BcsDecoder(inputBuffer, descriptor.elementsCount)
   }
 

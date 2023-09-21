@@ -19,19 +19,52 @@ fun Bcs(builderAction: Bcs.() -> Unit): Bcs {
 }
 
 object Bcs {
+
+  /**
+   * Encode a value to a byte array according to the BCS specification.
+   *
+   * @param serializer The serializer to use to encode the value.
+   * @param value The value to encode.
+   * @return The encoded value as a byte array.
+   *
+   */
   fun <T> encodeToBinary(serializer: SerializationStrategy<T>, value: T): ByteArray {
     val bcsEncoder = BcsEncoder()
     bcsEncoder.encodeSerializableValue(serializer, value)
     return bcsEncoder.output.toByteArray()
   }
 
+  /**
+   * Encode a value to a byte array according to the BCS specification.
+   *
+   * This is an inline overload convenience method to avoid the need to explicitly pass a serializer.
+   *
+   * @param value The value to encode.
+   * @return The encoded value as a byte array.
+   *
+   */
   inline fun <reified T> encodeToBinary(value: T) = encodeToBinary(serializer(), value)
 
+  /**
+   * Decode a value from a byte array according to the BCS specification.
+   *
+   * @param bytes The byte array to decode.
+   * @param deserializer The deserializer to use to decode the value.
+   * @return The decoded value.
+   */
   fun <T> decodeFromBinary(bytes: ByteArray, deserializer: DeserializationStrategy<T>): T {
     val decoder = BcsDecoder(BcsDataInputBuffer(bytes))
     return decoder.decodeSerializableValue(deserializer)
   }
 
+  /**
+   * Decode a value from a byte array according to the BCS specification.
+   *
+   * This is an inline overload convenience method to avoid the need to explicitly pass a deserializer.
+   *
+   * @param bytes The byte array to decode.
+   * @return The decoded value.
+   */
   inline fun <reified T> decodeFromBinary(bytes: ByteArray): T =
     decodeFromBinary(bytes, serializer())
 
