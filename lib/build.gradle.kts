@@ -49,9 +49,7 @@ kotlin {
   sourceSets {
     val commonMain by getting {
       dependencies {
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")  {
-          exclude(group = "org.jetbrains.kotlin", module = "plugin.serialization")
-        }
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")
       }
     }
     val commonTest by getting {
@@ -71,10 +69,6 @@ android {
   defaultConfig {
     minSdk = 24
     compileSdk = 33
-  }
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
   }
 }
 
