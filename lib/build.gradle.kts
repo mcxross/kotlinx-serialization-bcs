@@ -33,7 +33,6 @@ kotlin {
   }
 
   jvm {
-    jvmToolchain(17)
     testRuns["test"].executionTask.configure {
       useJUnitPlatform()
     }
@@ -63,6 +62,8 @@ kotlin {
     }
   }
 }
+
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 
 android {
   namespace = "mcxross.bcs"
