@@ -49,7 +49,9 @@ kotlin {
   sourceSets {
     val commonMain by getting {
       dependencies {
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")
+        implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")  {
+          exclude(group = "org.jetbrains.kotlin", module = "plugin.serialization")
+        }
       }
     }
     val commonTest by getting {
