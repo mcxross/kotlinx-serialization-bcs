@@ -15,13 +15,13 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-      
+
       - name: Grant Permission to Execute Gradle
         run: chmod +x gradlew
-      
+
       - name: Build with Gradle
         run: ./gradlew :bcs:build
-      
+
       - name: Archive build artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -52,6 +52,8 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: bcs_build
+      - name: Grant execute permissions to publish script
+        run: chmod +x ./scripts/publish
       - name: Publish to Sonatype (Maven Central)
         shell: bash
         run: ./scripts/publish
