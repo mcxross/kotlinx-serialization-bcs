@@ -9,7 +9,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 # Functions
 function is_release_commit() {
   commit_message=$(git log --oneline --format=%B -n 1 ${1} | head -n 1)
-  if [[ "${commit_message}" == "release version "* ]]; then
+  if [[ "${commit_message}" == "release v"* ]]; then
     return 0
   else
     return 1
