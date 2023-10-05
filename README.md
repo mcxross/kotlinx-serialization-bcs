@@ -67,45 +67,45 @@ implementation("xyz.mcxross.bcs:bcs-js:<$bcs_version>")
 
 ##### Basic Types
 
-For basic types, simply call the `Bcs.encodeToBinary()` function with the desired value, and in each case, you will get a `ByteArray` containing the state of this object in the BCS format
+For basic types, simply call the `Bcs.encodeToByteArray()` function with the desired value, and in each case, you will get a `ByteArray` containing the state of this object in the BCS format
 
 - **Triple**
 
 ```kotlin
-val bcs = Bcs.encodeToBinary(Triple(listOf(), "çå∞≠¢õß∂ƒ∫", Location(x = 3, y = 4)))
+val bcs = Bcs.encodeToByteArray(Triple(listOf(), "çå∞≠¢õß∂ƒ∫", Location(x = 3, y = 4)))
 ```
 
 - **String**
 
 ```kotlin
-val bcs = Bcs.encodeToBinary("çå∞≠¢õß∂ƒ∫")
+val bcs = Bcs.encodeToByteArray("çå∞≠¢õß∂ƒ∫")
 ```
 
 - **List**
 
 ```kotlin
-val bcs = Bcs.encodeToBinary(listOf(1, 2, 3, 4, 5))
+val bcs = Bcs.encodeToByteArray(listOf(1, 2, 3, 4, 5))
 ```
 
 - **Map**
 
 ```kotlin
-val bcs = Bcs.encodeToBinary(mapOf("a" to 1, "b" to 2, "c" to 3))
+val bcs = Bcs.encodeToByteArray(mapOf("a" to 1, "b" to 2, "c" to 3))
 ```
 
 - **Double**
 
 ```kotlin
-val bcs = Bcs.encodeToBinary(3.14159265359)
+val bcs = Bcs.encodeToByteArray(3.14159265359)
 ```
 
 - **Boolean**
 
 ```kotlin
-val bcs = Bcs.encodeToBinary(false)
+val bcs = Bcs.encodeToByteArray(false)
 ```
 
-Deserialization is done by calling the `Bcs.decodeFromBinary()` function with the **described** type
+Deserialization is done by calling the `Bcs.decodeFromByteArray()` function with the **described** type
 
 ##### User-defined Types
 
@@ -121,20 +121,20 @@ data class Data(
 )
 ```
 
-You can now serialize an instance of this class by calling `Bcs.encodeToBinary()`
+You can now serialize an instance of this class by calling `Bcs.encodeToByteArray()`
 
 ```kotlin
-val bcs = Bcs.encodeToBinary(
+val bcs = Bcs.encodeToByteArray(
     Data(1_000_000, 3.14159265359, "çå∞≠¢õß∂ƒ∫", false)
 )
 ```
 
 As a result, you get a `ByteArray` containing the state of this object in the BCS format
 
-To deserialize an object from BCS, use the `decodeFromBinary()` function:
+To deserialize an object from BCS, use the `decodeFromByteArray()` function:
 
 ```kotlin
-val obj = Bcs.decodeFromBinary<Data>(byteArrayOf())
+val obj = Bcs.decodeFromByteArray<Data>(byteArrayOf())
 ```
 
 **Note**: BCS is not a self-describing format. As such, one must know the message type and layout ahead of time in order
