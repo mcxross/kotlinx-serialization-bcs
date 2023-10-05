@@ -11,15 +11,18 @@ import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import xyz.mcxross.bcs.MAX_CONTAINER_DEPTH
+import xyz.mcxross.bcs.exception.ExceededMaxLen
 import xyz.mcxross.bcs.exception.NotSupported
 import xyz.mcxross.bcs.stream.BcsDataInputBuffer
 
 @OptIn(ExperimentalSerializationApi::class)
-class BcsDecoder(private val inputBuffer: BcsDataInputBuffer, private var elementsCount: Int = 0) :
+class BcsDecoder(
+  private val depth: UInt = 0u,
+  private val inputBuffer: BcsDataInputBuffer,
+  private var elementsCount: Int = 0
+) :
   AbstractDecoder() {
   private var elementIndex = 0
-
-  private var depth: Int = 0
 
   override val serializersModule: SerializersModule = EmptySerializersModule()
   override fun decodeBoolean(): Boolean = inputBuffer.readBoolean()
@@ -47,10 +50,10 @@ class BcsDecoder(private val inputBuffer: BcsDataInputBuffer, private var elemen
     previousValue: T?
   ): T {
     val unitDescriptor = serialDescriptor<Unit>()
-    if (deserializer.descriptor == unitDescriptor)
-      return decodeUnit() as T
+    return if (deserializer.descriptor == unitDescriptor)
+      decodeUnit() as T
     else
-      return super.decodeSerializableValue(deserializer, previousValue)
+      super.decodeSerializableValue(deserializer, previousValue)
   }
 
   private fun decodeUnit(): Int {
@@ -73,18 +76,10 @@ class BcsDecoder(private val inputBuffer: BcsDataInputBuffer, private var elemen
   }
 
   override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
-
-    val newDepth = when (descriptor.kind) {
-      StructureKind.CLASS, StructureKind.OBJECT -> 1 + depth
-      StructureKind.LIST, StructureKind.MAP -> depth
-      else -> throw NotSupported("Not supported: ${descriptor.kind}")
+    if (depth > MAX_CONTAINER_DEPTH) {
+      throw ExceededMaxLen("Recursion depth limit exceeded")
     }
-
-    if (newDepth > MAX_CONTAINER_DEPTH.toInt()) {
-      throw SerializationException("Container depth exceeds maximum allowed depth of $MAX_CONTAINER_DEPTH")
-    }
-
-    return BcsDecoder(inputBuffer, descriptor.elementsCount)
+    return BcsDecoder(depth + 1u, inputBuffer, descriptor.elementsCount)
   }
 
 }
