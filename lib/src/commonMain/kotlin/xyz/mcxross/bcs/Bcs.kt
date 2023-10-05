@@ -6,7 +6,6 @@ import kotlinx.serialization.serializer
 import xyz.mcxross.bcs.internal.BcsDecoder
 import xyz.mcxross.bcs.internal.BcsEncoder
 import xyz.mcxross.bcs.stream.BcsDataInputBuffer
-import xyz.mcxross.bcs.stream.BcsDataOutputBuffer
 
 internal const val MAX_SEQUENCE_LENGTH: UInt = 2147483647u
 
@@ -28,7 +27,7 @@ object Bcs {
    * @return The encoded value as a byte array.
    *
    */
-  fun <T> encodeToBinary(serializer: SerializationStrategy<T>, value: T): ByteArray {
+  fun <T> encodeToByteArray(serializer: SerializationStrategy<T>, value: T): ByteArray {
     val bcsEncoder = BcsEncoder()
     bcsEncoder.encodeSerializableValue(serializer, value)
     return bcsEncoder.output.toByteArray()
@@ -43,7 +42,8 @@ object Bcs {
    * @return The encoded value as a byte array.
    *
    */
-  inline fun <reified T> encodeToBinary(value: T) = encodeToBinary(serializer(), value)
+  inline fun <reified T> encodeToByteArray(value: T) =
+    encodeToByteArray(serializer(), value)
 
   /**
    * Decode a value from a byte array according to the BCS specification.
@@ -52,8 +52,8 @@ object Bcs {
    * @param deserializer The deserializer to use to decode the value.
    * @return The decoded value.
    */
-  fun <T> decodeFromBinary(bytes: ByteArray, deserializer: DeserializationStrategy<T>): T {
-    val decoder = BcsDecoder(BcsDataInputBuffer(bytes))
+  fun <T> decodeFromByteArray(bytes: ByteArray, deserializer: DeserializationStrategy<T>): T {
+    val decoder = BcsDecoder(inputBuffer = BcsDataInputBuffer(bytes))
     return decoder.decodeSerializableValue(deserializer)
   }
 
@@ -65,7 +65,7 @@ object Bcs {
    * @param bytes The byte array to decode.
    * @return The decoded value.
    */
-  inline fun <reified T> decodeFromBinary(bytes: ByteArray): T =
-    decodeFromBinary(bytes, serializer())
+  inline fun <reified T> decodeFromByteArray(bytes: ByteArray): T =
+    decodeFromByteArray(bytes, serializer())
 
 }
