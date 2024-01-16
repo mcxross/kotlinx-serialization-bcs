@@ -20,8 +20,9 @@ kotlin {
     publishLibraryVariants("release", "debug")
   }
 
-  ios()
+  iosArm64()
   iosSimulatorArm64()
+
 
   js {
     browser()
@@ -40,25 +41,16 @@ kotlin {
 
   linuxX64()
   macosArm64()
-  macosX64()
   mingwX64()
   tvosArm64()
   watchosArm64()
 
   sourceSets {
-    val commonMain by getting {
-      dependencies {
-        implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.0")
-      }
+    commonMain.dependencies {
+      implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.2")
     }
-    val commonTest by getting {
-      dependencies {
-        implementation(kotlin("test"))
-      }
-    }
-    val iosMain by getting
-    val iosSimulatorArm64Main by getting {
-      dependsOn(iosMain)
+    commonTest.dependencies {
+      implementation(kotlin("test"))
     }
   }
 }

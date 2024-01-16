@@ -10,11 +10,12 @@ version = "0.1.0"
 repositories { mavenCentral() }
 
 kotlin {
-  jvmToolchain(11)
+  jvmToolchain(17)
 }
 
 dependencies {
   implementation(project(":bcs"))
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.2")
   testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 }

@@ -15,11 +15,11 @@ fun main() {
 
   val bcs = Bcs {}
 
-  val encoding = bcs.encodeToBinary(Data(1_000_000, 3.14159265359, false, "çå∞≠¢õß∂ƒ∫"))
+  val encoding = bcs.encodeToByteArray(Data(1_000_000, 3.14159265359, false, "çå∞≠¢õß∂ƒ∫"))
 
   println("Encoding: ${encoding.toList()}")
 
-  val decoding = bcs.decodeFromBinary<Data>(encoding)
+  val decoding = bcs.decodeFromByteArray<Data>(encoding)
 
   println("Decoding: $decoding")
 
