@@ -8,7 +8,7 @@ plugins {
 
 group = "xyz.mcxross.bcs"
 
-version = "1.0.0-SNAPSHOT"
+version = "1.0.1-SNAPSHOT"
 
 repositories {
   mavenCentral()
