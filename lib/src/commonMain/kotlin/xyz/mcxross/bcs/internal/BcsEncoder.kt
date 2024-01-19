@@ -1,5 +1,6 @@
 package xyz.mcxross.bcs.internal
 
+import kotlin.experimental.or
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -12,7 +13,6 @@ import xyz.mcxross.bcs.MAX_SEQUENCE_LENGTH
 import xyz.mcxross.bcs.exception.ExceededMaxLen
 import xyz.mcxross.bcs.exception.NotSupported
 import xyz.mcxross.bcs.stream.BcsDataOutputBuffer
-import kotlin.experimental.or
 
 @OptIn(ExperimentalSerializationApi::class)
 class BcsEncoder : AbstractEncoder() {
@@ -38,9 +38,7 @@ class BcsEncoder : AbstractEncoder() {
     this.outputU32AsUleb128(len.toInt())
   }
 
-  override fun encodeValue(value: Any) {
-
-  }
+  override fun encodeValue(value: Any) {}
 
   override fun encodeBoolean(value: Boolean) = output.writeBoolean(value)
 
@@ -58,7 +56,7 @@ class BcsEncoder : AbstractEncoder() {
 
   override fun beginCollection(
     descriptor: SerialDescriptor,
-    collectionSize: Int
+    collectionSize: Int,
   ): CompositeEncoder {
     outputSeqLen(collectionSize.toUInt())
     return this
@@ -82,10 +80,8 @@ class BcsEncoder : AbstractEncoder() {
 
   override fun <T> encodeSerializableValue(serializer: SerializationStrategy<T>, value: T) {
     val unitSerializer = serializer<Unit>()
-    if (serializer.descriptor == unitSerializer.descriptor)
-      encodeUnit(value as Unit)
-    else
-      super.encodeSerializableValue(serializer, value)
+    if (serializer.descriptor == unitSerializer.descriptor) encodeUnit(value as Unit)
+    else super.encodeSerializableValue(serializer, value)
   }
 
   private fun encodeUnit(unit: Unit) {

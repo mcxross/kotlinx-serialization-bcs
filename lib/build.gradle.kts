@@ -7,6 +7,7 @@ plugins {
 }
 
 group = "xyz.mcxross.bcs"
+
 version = "1.0.0-SNAPSHOT"
 
 repositories {
@@ -15,14 +16,11 @@ repositories {
 }
 
 kotlin {
+  androidTarget { publishLibraryVariants("release", "debug") }
 
-  androidTarget {
-    publishLibraryVariants("release", "debug")
-  }
-
+  iosX64()
   iosArm64()
   iosSimulatorArm64()
-
 
   js {
     browser()
@@ -33,25 +31,25 @@ kotlin {
     }
   }
 
-  jvm {
-    testRuns["test"].executionTask.configure {
-      useJUnitPlatform()
-    }
-  }
+  jvm { testRuns["test"].executionTask.configure { useJUnitPlatform() } }
 
+  mingwX64()
   linuxX64()
   macosArm64()
-  mingwX64()
+  macosX64()
   tvosArm64()
+  tvosX64()
+  tvosSimulatorArm64()
+  watchosArm32()
   watchosArm64()
+  watchosX64()
+  watchosSimulatorArm64()
 
   sourceSets {
     commonMain.dependencies {
       implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.2")
     }
-    commonTest.dependencies {
-      implementation(kotlin("test"))
-    }
+    commonTest.dependencies { implementation(kotlin("test")) }
   }
 }
 
@@ -76,7 +74,7 @@ publishing {
             "https://s01.oss.sonatype.org/content/repositories/snapshots/"
           } else {
             "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-          },
+          }
         )
         credentials {
           username = property("sonatypeUser") as String
@@ -89,9 +87,7 @@ publishing {
   publications.withType<MavenPublication> {
     pom {
       name.set("BCS")
-      description.set(
-        "KMP implementation of the Binary Canonical Serialization (BCS) format",
-      )
+      description.set("KMP implementation of the Binary Canonical Serialization (BCS) format")
       url.set("https://github.com/mcxross")
 
       licenses {

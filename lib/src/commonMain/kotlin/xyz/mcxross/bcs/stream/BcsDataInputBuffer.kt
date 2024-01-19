@@ -10,6 +10,7 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
   }
 
   fun peek(): Byte = byteArray.getOrNull(currentIndex) ?: throw Exception("End of stream")
+
   fun peekSafely(): Byte? = byteArray.getOrNull(currentIndex)
 
   // Increases index only if next byte is not null
@@ -20,9 +21,7 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
   fun takeNext(next: Int): ByteArray {
     require(next > 0) { "Number of bytes to take must be greater than 0!" }
     val result = ByteArray(next)
-    (0..<next).forEach {
-      result[it] = requireNextByte()
-    }
+    (0 ..< next).forEach { result[it] = requireNextByte() }
     return result
   }
 
@@ -78,5 +77,4 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
   }
 
   fun readUTF(): String = takeNext(readULEB128()).decodeToString()
-
 }

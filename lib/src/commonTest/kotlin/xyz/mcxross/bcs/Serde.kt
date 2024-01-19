@@ -14,6 +14,12 @@ class Serde {
   }
 
   @Test
+  fun testByte() {
+    val encoding = bcs.encodeToByteArray(1.toByte())
+    assertContentEquals(byteArrayOf(1.toByte()), encoding)
+  }
+
+  @Test
   fun testUTF() {
     val encoding = bcs.encodeToByteArray("çå∞≠¢õß∂ƒ∫")
     val expected = byteArrayOf(

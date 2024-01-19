@@ -18,20 +18,29 @@ class BcsDecoder(
   private val depth: UInt = 0u,
   private val inputBuffer: BcsDataInputBuffer,
   private var elementsCount: Int = 0
-) :
-  AbstractDecoder() {
+) : AbstractDecoder() {
   private var elementIndex = 0
 
   override val serializersModule: SerializersModule = EmptySerializersModule()
+
   override fun decodeBoolean(): Boolean = inputBuffer.readBoolean()
+
   override fun decodeByte(): Byte = inputBuffer.readByte()
+
   override fun decodeShort(): Short = inputBuffer.readShort()
+
   override fun decodeInt(): Int = inputBuffer.readInt()
+
   override fun decodeLong(): Long = inputBuffer.readLong()
+
   override fun decodeFloat(): Float = throw NotSupported("Not supported: serialize Float")
+
   override fun decodeDouble(): Double = inputBuffer.readDouble()
+
   override fun decodeChar(): Char = throw NotSupported("Not supported: serialize Char")
+
   override fun decodeString(): String = inputBuffer.readUTF()
+
   override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
     return inputBuffer.readULEB128()
   }
@@ -48,16 +57,13 @@ class BcsDecoder(
     previousValue: T?
   ): T {
     val unitDescriptor = serialDescriptor<Unit>()
-    return if (deserializer.descriptor == unitDescriptor)
-      decodeUnit() as T
-    else
-      super.decodeSerializableValue(deserializer, previousValue)
+    return if (deserializer.descriptor == unitDescriptor) decodeUnit() as T
+    else super.decodeSerializableValue(deserializer, previousValue)
   }
 
   private fun decodeUnit(): Int {
     return inputBuffer.readULEB128()
   }
-
 
   override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
     if (elementIndex == elementsCount) return CompositeDecoder.DECODE_DONE
@@ -79,5 +85,4 @@ class BcsDecoder(
     }
     return BcsDecoder(depth + 1u, inputBuffer, descriptor.elementsCount)
   }
-
 }

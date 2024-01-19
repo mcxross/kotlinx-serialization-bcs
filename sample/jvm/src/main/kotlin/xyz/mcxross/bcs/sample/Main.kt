@@ -4,12 +4,7 @@ import kotlinx.serialization.Serializable
 import xyz.mcxross.bcs.Bcs
 
 @Serializable
-data class Data(
-  val long: Long,
-  val double: Double,
-  val boolean: Boolean,
-  val string: String,
-)
+data class Data(val long: Long, val double: Double, val boolean: Boolean, val string: String)
 
 fun main() {
 
@@ -22,5 +17,4 @@ fun main() {
   val decoding = bcs.decodeFromByteArray<Data>(encoding)
 
   println("Decoding: $decoding")
-
 }

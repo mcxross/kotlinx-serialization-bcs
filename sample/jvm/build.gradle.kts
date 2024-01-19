@@ -5,13 +5,12 @@ plugins {
 }
 
 group = "xyz.mcxross.bcs.sample"
+
 version = "0.1.0"
 
 repositories { mavenCentral() }
 
-kotlin {
-  jvmToolchain(17)
-}
+kotlin { jvmToolchain(17) }
 
 dependencies {
   implementation(project(":bcs"))
@@ -22,6 +21,4 @@ dependencies {
 
 tasks.getByName<Test>("test") { useJUnitPlatform() }
 
-application {
-  mainClass.set("xyz.mcxross.bcs.sample.MainKt")
-}
+application { mainClass.set("xyz.mcxross.bcs.sample.MainKt") }

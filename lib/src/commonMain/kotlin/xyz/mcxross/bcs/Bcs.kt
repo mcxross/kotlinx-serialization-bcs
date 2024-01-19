@@ -25,7 +25,6 @@ object Bcs {
    * @param serializer The serializer to use to encode the value.
    * @param value The value to encode.
    * @return The encoded value as a byte array.
-   *
    */
   fun <T> encodeToByteArray(serializer: SerializationStrategy<T>, value: T): ByteArray {
     val bcsEncoder = BcsEncoder()
@@ -36,14 +35,13 @@ object Bcs {
   /**
    * Encode a value to a byte array according to the BCS specification.
    *
-   * This is an inline overload convenience method to avoid the need to explicitly pass a serializer.
+   * This is an inline overload convenience method to avoid the need to explicitly pass a
+   * serializer.
    *
    * @param value The value to encode.
    * @return The encoded value as a byte array.
-   *
    */
-  inline fun <reified T> encodeToByteArray(value: T) =
-    encodeToByteArray(serializer(), value)
+  inline fun <reified T> encodeToByteArray(value: T) = encodeToByteArray(serializer(), value)
 
   /**
    * Decode a value from a byte array according to the BCS specification.
@@ -60,12 +58,12 @@ object Bcs {
   /**
    * Decode a value from a byte array according to the BCS specification.
    *
-   * This is an inline overload convenience method to avoid the need to explicitly pass a deserializer.
+   * This is an inline overload convenience method to avoid the need to explicitly pass a
+   * deserializer.
    *
    * @param bytes The byte array to decode.
    * @return The decoded value.
    */
   inline fun <reified T> decodeFromByteArray(bytes: ByteArray): T =
     decodeFromByteArray(bytes, serializer())
-
 }
