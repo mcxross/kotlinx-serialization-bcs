@@ -5,6 +5,7 @@ the [kotlinx.serialization](https://kotlinlang.org/docs/serialization.html#libra
 
 [![Kotlin Version](https://img.shields.io/badge/Kotlin-1.9.22-B125EA?logo=kotlin)](https://kotlinlang.org)
 [![Maven Central](https://img.shields.io/maven-central/v/xyz.mcxross.bcs/bcs.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/xyz.mcxross.bcs/bcs)
+[![Snapshot](https://img.shields.io/nexus/s/xyz.mcxross.bcs/bcs?server=https%3A%2F%2Fs01.oss.sonatype.org&label=Snapshot)](https://s01.oss.sonatype.org/content/repositories/snapshots/xyz/mcxross/bcs/)
 [![Build](https://github.com/mcxross/kotlinx-serialization-bcs/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/mcxross/kotlinx-serialization-bcs/actions/workflows/build.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
