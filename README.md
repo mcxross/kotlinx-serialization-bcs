@@ -5,7 +5,7 @@ the [kotlinx.serialization](https://kotlinlang.org/docs/serialization.html#libra
 
 [![Kotlin Version](https://img.shields.io/badge/Kotlin-1.9.22-B125EA?logo=kotlin)](https://kotlinlang.org)
 [![Maven Central](https://img.shields.io/maven-central/v/xyz.mcxross.bcs/bcs.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/xyz.mcxross.bcs/bcs)
-[![Build](https://github.com/mcxross/kotlinx-serialization-bcs/workflows/Tests/badge.svg)](https://github.com/mcxross/kotlinx-serialization-bcs/actions)
+[![Build](https://github.com/mcxross/kotlinx-serialization-bcs/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/mcxross/kotlinx-serialization-bcs/actions/workflows/build.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 ![badge-android](http://img.shields.io/badge/Platform-Android-brightgreen.svg?logo=android)
