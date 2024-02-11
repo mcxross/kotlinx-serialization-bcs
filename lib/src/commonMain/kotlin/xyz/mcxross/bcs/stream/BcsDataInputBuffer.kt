@@ -47,33 +47,19 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
 
   fun readShort(): Short {
     val bytes = takeNext(2)
-    return (bytes[0].toInt() shl 8 or (bytes[1].toInt() and 0xFF)).toShort()
+    return ((bytes[1].toInt() shl 8) or (bytes[0].toInt() and 0xFF)).toShort()
   }
 
   fun readInt(): Int {
     val bytes = takeNext(4)
-    return (bytes[0].toInt() shl 24) or
-      (bytes[1].toInt() shl 16) or
-      (bytes[2].toInt() shl 8) or
-      (bytes[3].toInt() and 0xFF)
+    return bytes.foldIndexed(0) { index, acc, byte ->
+      acc or ((byte.toInt() and 0xFF) shl (index * 8))
+    }
   }
 
   fun readLong(): Long {
     val bytes = takeNext(8)
-    return (bytes[0].toLong() shl 56) or
-      (bytes[1].toLong() shl 48) or
-      (bytes[2].toLong() shl 40) or
-      (bytes[3].toLong() shl 32) or
-      (bytes[4].toLong() shl 24) or
-      (bytes[5].toLong() shl 16) or
-      (bytes[6].toLong() shl 8) or
-      (bytes[7].toLong() and 0xFF)
-  }
-
-  fun readDouble(): Double {
-    val bits: Long = readLong()
-    // TODO doesn't work for all, fix.
-    return Double.fromBits(bits)
+    return bytes.indices.fold(0L) { acc, i -> acc or ((bytes[i].toLong() and 0xFF) shl (i * 8)) }
   }
 
   fun readUTF(): String = takeNext(readULEB128()).decodeToString()

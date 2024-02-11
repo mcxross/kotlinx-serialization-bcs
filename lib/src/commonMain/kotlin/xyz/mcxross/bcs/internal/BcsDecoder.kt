@@ -17,7 +17,7 @@ import xyz.mcxross.bcs.stream.BcsDataInputBuffer
 class BcsDecoder(
   private val depth: UInt = 0u,
   private val inputBuffer: BcsDataInputBuffer,
-  private var elementsCount: Int = 0
+  private var elementsCount: Int = 0,
 ) : AbstractDecoder() {
   private var elementIndex = 0
 
@@ -35,7 +35,7 @@ class BcsDecoder(
 
   override fun decodeFloat(): Float = throw NotSupported("Not supported: serialize Float")
 
-  override fun decodeDouble(): Double = inputBuffer.readDouble()
+  override fun decodeDouble(): Double = throw NotSupported("Not supported: serialize Double")
 
   override fun decodeChar(): Char = throw NotSupported("Not supported: serialize Char")
 
@@ -54,7 +54,7 @@ class BcsDecoder(
   @Suppress("UNCHECKED_CAST")
   override fun <T> decodeSerializableValue(
     deserializer: DeserializationStrategy<T>,
-    previousValue: T?
+    previousValue: T?,
   ): T {
     val unitDescriptor = serialDescriptor<Unit>()
     return if (deserializer.descriptor == unitDescriptor) decodeUnit() as T

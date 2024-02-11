@@ -32,13 +32,11 @@ class BcsDataOutputBuffer : BcsDataBuffer {
   }
 
   fun writeShort(shortValue: Short) =
-    repeat(2) { bytes.add((shortValue.toInt() shr (8 - it * 8)).toByte()) }
+    repeat(2) { bytes.add((shortValue.toInt() shr (it * 8)).toByte()) }
 
-  fun writeInt(intValue: Int) = repeat(4) { bytes.add((intValue shr (24 - it * 8)).toByte()) }
+  fun writeInt(intValue: Int) = repeat(4) { bytes.add((intValue shr (it * 8)).toByte()) }
 
-  fun writeLong(longValue: Long) = repeat(8) { bytes.add((longValue shr (56 - it * 8)).toByte()) }
-
-  fun writeDouble(doubleValue: Double) = writeLong(doubleValue.toRawBits())
+  fun writeLong(longValue: Long) = repeat(8) { bytes.add((longValue shr (it * 8)).toByte()) }
 
   fun writeUTF(text: String) {
     val utfBytes = text.encodeToByteArray()

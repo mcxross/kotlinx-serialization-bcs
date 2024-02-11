@@ -50,7 +50,7 @@ class BcsEncoder : AbstractEncoder() {
 
   override fun encodeLong(value: Long) = output.writeLong(value)
 
-  override fun encodeDouble(value: Double) = output.writeDouble(value)
+  override fun encodeDouble(value: Double) = throw NotSupported("Not supported: serialize Double")
 
   override fun encodeString(value: String) = output.writeUTF(value)
 
