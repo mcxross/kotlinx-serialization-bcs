@@ -1,14 +1,18 @@
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
   kotlin("multiplatform")
   id("com.android.library")
   kotlin("plugin.serialization")
-  id("maven-publish")
-  id("signing")
+  id("org.jetbrains.dokka") version "1.9.20"
+  id("com.vanniktech.maven.publish")
 }
 
 group = "xyz.mcxross.bcs"
 
-version = "1.0.1-SNAPSHOT"
+version = "0.1.1"
 
 repositories {
   mavenCentral()
@@ -57,68 +61,52 @@ kotlin {
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 
 android {
-  namespace = "mcxross.bcs"
+  namespace = "xyz.mcxross.bcs"
   defaultConfig {
     minSdk = 24
     compileSdk = 33
   }
 }
 
-publishing {
-  if (hasProperty("sonatypeUser") && hasProperty("sonatypePass")) {
-    repositories {
-      maven {
-        name = "sonatype"
-        val isSnapshot = version.toString().endsWith("-SNAPSHOT")
-        setUrl(
-          if (isSnapshot) {
-            "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-          } else {
-            "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-          }
-        )
-        credentials {
-          username = property("sonatypeUser") as String
-          password = property("sonatypePass") as String
-        }
+mavenPublishing {
+  coordinates("xyz.mcxross.bcs", "bcs", version.toString())
+
+  configure(
+    KotlinMultiplatform(
+      javadocJar = JavadocJar.Dokka("dokkaHtml"),
+      sourcesJar = true,
+      androidVariantsToPublish = listOf("debug", "release"),
+    )
+  )
+
+  pom {
+    name.set("BCS")
+    description.set("KMP implementation of the Binary Canonical Serialization (BCS) format")
+    inceptionYear.set("2023")
+    url.set("https://github.com/mcxross")
+    licenses {
+      license {
+        name.set("The Apache License, Version 2.0")
+        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+        distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
       }
+    }
+    developers {
+      developer {
+        id.set("mcxross")
+        name.set("Mcxross")
+        email.set("oss@mcxross.xyz")
+        url.set("https://mcxross.xyz/")
+      }
+    }
+    scm {
+      url.set("https://github.com/mcxross/kotlinx-serialization-bcs")
+      connection.set("scm:git:ssh://github.com/mcxross/kotlinx-serialization-bcs.git")
+      developerConnection.set("scm:git:ssh://github.com/mcxross/kotlinx-serialization-bcs.git")
     }
   }
 
-  publications.withType<MavenPublication> {
-    pom {
-      name.set("BCS")
-      description.set("KMP implementation of the Binary Canonical Serialization (BCS) format")
-      url.set("https://github.com/mcxross")
+  publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
 
-      licenses {
-        license {
-          name.set("Apache License, Version 2.0")
-          url.set("https://opensource.org/licenses/APACHE-2.0")
-        }
-      }
-      developers {
-        developer {
-          id.set("mcxross")
-          name.set("Mcxross")
-          email.set("oss@mcxross.xyz")
-        }
-      }
-      scm {
-        connection.set("scm:git:git://github.com/mcxross/kotlinx-serialization-bcs.git")
-        developerConnection.set("scm:git:ssh://github.com/mcxross/kotlinx-serialization-bcs.git")
-        url.set("https://github.com/mcxross/kotlinx-serialization-bcs")
-      }
-    }
-  }
-}
-
-signing {
-  val sonatypeGpgKey = System.getenv("SONATYPE_GPG_KEY")
-  val sonatypeGpgKeyPassword = System.getenv("SONATYPE_GPG_KEY_PASSWORD")
-  when {
-    sonatypeGpgKey == null || sonatypeGpgKeyPassword == null -> useGpgCmd()
-    else -> useInMemoryPgpKeys(sonatypeGpgKey, sonatypeGpgKeyPassword)
-  }
-  sign(publishing.publications)
+  signAllPublications()
 }
