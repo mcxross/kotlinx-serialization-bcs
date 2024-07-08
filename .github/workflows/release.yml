@@ -23,7 +23,7 @@ jobs:
           distribution: temurin
           java-version: 17
       - name: Grant execute permissions to publish script
-        run: chmod +x ./scripts/publish
+        run: chmod +x ./scripts/release
       - name: Publish to Sonatype (Maven Central)
         shell: bash
         run: ./scripts/release
