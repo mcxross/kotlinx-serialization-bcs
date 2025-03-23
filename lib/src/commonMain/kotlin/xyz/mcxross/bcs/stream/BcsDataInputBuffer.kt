@@ -3,64 +3,129 @@ package xyz.mcxross.bcs.stream
 import xyz.mcxross.bcs.ext.toBoolean
 
 class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
-  private var currentIndex = 0
+  private var position = 0
 
   fun skip(bytes: Int) {
-    currentIndex += bytes
+    if (position + bytes > byteArray.size) {
+      throw Exception("Cannot skip beyond end of buffer")
+    }
+    position += bytes
   }
 
-  fun peek(): Byte = byteArray.getOrNull(currentIndex) ?: throw Exception("End of stream")
+  fun peek(): Byte {
+    if (position >= byteArray.size) {
+      throw Exception("End of stream")
+    }
+    return byteArray[position]
+  }
 
-  fun peekSafely(): Byte? = byteArray.getOrNull(currentIndex)
+  fun peekSafely(): Byte? =
+    if (position < byteArray.size) byteArray[position] else null
 
-  // Increases index only if next byte is not null
-  fun nextByteOrNull(): Byte? = byteArray.getOrNull(currentIndex)?.also { currentIndex++ }
+  fun nextByteOrNull(): Byte? =
+    if (position < byteArray.size) byteArray[position++] else null
 
-  fun requireNextByte(): Byte = nextByteOrNull() ?: throw Exception("End of stream")
+  fun requireNextByte(): Byte =
+    if (position < byteArray.size) byteArray[position++] else throw Exception("End of stream")
 
   fun takeNext(next: Int): ByteArray {
     require(next > 0) { "Number of bytes to take must be greater than 0!" }
+
+    if (position + next > byteArray.size) {
+      throw Exception("Not enough bytes in buffer")
+    }
+
     val result = ByteArray(next)
-    (0..<next).forEach { result[it] = requireNextByte() }
+    byteArray.copyInto(result, 0, position, position + next)
+    position += next
     return result
   }
 
   override fun toByteArray() = byteArray
 
-  fun readByte(): Byte {
-    return requireNextByte()
-  }
+  fun readByte(): Byte = requireNextByte()
 
   fun readULEB128(): Int {
     var result = 0
     var shift = 0
     var byte: Int
+
     do {
-      byte = requireNextByte().toInt()
+      if (position >= byteArray.size) {
+        throw Exception("Unexpected end of ULEB128 sequence")
+      }
+
+      byte = byteArray[position++].toInt() and 0xFF
       result = result or ((byte and 0x7F) shl shift)
       shift += 7
     } while (byte and 0x80 != 0)
+
     return result
   }
 
-  fun readBoolean(): Boolean = readByte().toBoolean()
+  fun readBoolean(): Boolean = requireNextByte().toBoolean()
 
   fun readShort(): Short {
-    val bytes = takeNext(2)
-    return ((bytes[1].toInt() shl 8) or (bytes[0].toInt() and 0xFF)).toShort()
+    if (position + 2 > byteArray.size) {
+      throw Exception("Not enough bytes to read Short")
+    }
+
+    val b0 = byteArray[position++].toInt() and 0xFF
+    val b1 = byteArray[position++].toInt() and 0xFF
+
+    return ((b1 shl 8) or b0).toShort()
   }
 
   fun readInt(): Int {
-    val bytes = takeNext(4)
-    return bytes.foldIndexed(0) { index, acc, byte ->
-      acc or ((byte.toInt() and 0xFF) shl (index * 8))
+    if (position + 4 > byteArray.size) {
+      throw Exception("Not enough bytes to read Int")
     }
+
+    val b0 = byteArray[position++].toInt() and 0xFF
+    val b1 = byteArray[position++].toInt() and 0xFF
+    val b2 = byteArray[position++].toInt() and 0xFF
+    val b3 = byteArray[position++].toInt() and 0xFF
+
+    return b0 or (b1 shl 8) or (b2 shl 16) or (b3 shl 24)
   }
 
   fun readLong(): Long {
-    val bytes = takeNext(8)
-    return bytes.indices.fold(0L) { acc, i -> acc or ((bytes[i].toLong() and 0xFF) shl (i * 8)) }
+    if (position + 8 > byteArray.size) {
+      throw Exception("Not enough bytes to read Long")
+    }
+
+    val b0 = byteArray[position++].toLong() and 0xFF
+    val b1 = byteArray[position++].toLong() and 0xFF
+    val b2 = byteArray[position++].toLong() and 0xFF
+    val b3 = byteArray[position++].toLong() and 0xFF
+    val b4 = byteArray[position++].toLong() and 0xFF
+    val b5 = byteArray[position++].toLong() and 0xFF
+    val b6 = byteArray[position++].toLong() and 0xFF
+    val b7 = byteArray[position++].toLong() and 0xFF
+
+    return b0 or (b1 shl 8) or (b2 shl 16) or (b3 shl 24) or
+      (b4 shl 32) or (b5 shl 40) or (b6 shl 48) or (b7 shl 56)
   }
 
-  fun readUTF(): String = takeNext(readULEB128()).decodeToString()
+  fun readUTF(): String {
+    val length = readULEB128()
+
+    if (position + length > byteArray.size) {
+      throw Exception("Not enough bytes to read UTF string of length $length")
+    }
+
+    val result = byteArray.decodeToString(position, position + length)
+    position += length
+    return result
+  }
+
+  fun hasRemaining(): Boolean = position < byteArray.size
+
+  fun remaining(): Int = byteArray.size - position
+
+  fun position(): Int = position
+
+  fun reset() {
+    position = 0
+  }
 }

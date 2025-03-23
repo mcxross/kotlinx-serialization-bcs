@@ -2,45 +2,98 @@ package xyz.mcxross.bcs.stream
 
 import xyz.mcxross.bcs.ext.toByte
 
-class BcsDataOutputBuffer : BcsDataBuffer {
+class BcsDataOutputBuffer(initialCapacity: Int = 32) : BcsDataBuffer {
 
-  private val bytes = mutableListOf<Byte>()
+  private var buffer = ByteArray(32)
+  private var position = 0
 
-  fun add(byte: Byte) = bytes.add(byte)
+  init {
+    buffer = ByteArray(initialCapacity)
+  }
 
-  fun addAll(bytes: List<Byte>) = this.bytes.addAll(bytes)
+  private fun ensureCapacity(additionalBytes: Int) {
+    if (position + additionalBytes > buffer.size) {
+      val newSize = maxOf(buffer.size * 2, position + additionalBytes)
+      buffer = buffer.copyOf(newSize)
+    }
+  }
 
-  fun addAll(bytes: ByteArray) = this.bytes.addAll(bytes.toList())
+  fun add(byte: Byte) {
+    ensureCapacity(1)
+    buffer[position++] = byte
+  }
 
-  override fun toByteArray() = bytes.toByteArray()
+  fun addAll(bytes: ByteArray) {
+    ensureCapacity(bytes.size)
+    bytes.copyInto(buffer, position)
+    position += bytes.size
+  }
+
+  fun addAll(bytes: List<Byte>) {
+    ensureCapacity(bytes.size)
+    for (i in bytes.indices) {
+      buffer[position + i] = bytes[i]
+    }
+    position += bytes.size
+  }
+
+  override fun toByteArray(): ByteArray = buffer.copyOf(position)
 
   fun writeBoolean(booleanValue: Boolean) {
-    bytes.add(booleanValue.toByte())
+    add(booleanValue.toByte())
   }
 
   fun writeByte(byteValue: Byte) {
-    bytes.add(byteValue)
+    add(byteValue)
   }
 
   fun writeULEB128(value: Int) {
     var v = value
     while (v > 0x7F) {
-      bytes.add((v and 0x7F or 0x80).toByte())
+      add((v and 0x7F or 0x80).toByte())
       v = v shr 7
     }
-    bytes.add(v.toByte())
+    add(v.toByte())
   }
 
-  fun writeShort(shortValue: Short) =
-    repeat(2) { bytes.add((shortValue.toInt() shr (it * 8)).toByte()) }
+  fun writeShort(shortValue: Short) {
+    ensureCapacity(2)
 
-  fun writeInt(intValue: Int) = repeat(4) { bytes.add((intValue shr (it * 8)).toByte()) }
+    buffer[position++] = shortValue.toByte()
+    buffer[position++] = (shortValue.toInt() shr 8).toByte()
+  }
 
-  fun writeLong(longValue: Long) = repeat(8) { bytes.add((longValue shr (it * 8)).toByte()) }
+  fun writeInt(intValue: Int) {
+    ensureCapacity(4)
+
+    buffer[position++] = intValue.toByte()
+    buffer[position++] = (intValue shr 8).toByte()
+    buffer[position++] = (intValue shr 16).toByte()
+    buffer[position++] = (intValue shr 24).toByte()
+  }
+
+  fun writeLong(longValue: Long) {
+    ensureCapacity(8)
+
+    buffer[position++] = longValue.toByte()
+    buffer[position++] = (longValue shr 8).toByte()
+    buffer[position++] = (longValue shr 16).toByte()
+    buffer[position++] = (longValue shr 24).toByte()
+    buffer[position++] = (longValue shr 32).toByte()
+    buffer[position++] = (longValue shr 40).toByte()
+    buffer[position++] = (longValue shr 48).toByte()
+    buffer[position++] = (longValue shr 56).toByte()
+  }
 
   fun writeUTF(text: String) {
     val utfBytes = text.encodeToByteArray()
     writeULEB128(utfBytes.size)
-    bytes.addAll(utfBytes.toList())
+    addAll(utfBytes)
   }
+
+  fun clear() {
+    position = 0
+  }
+
+  fun size(): Int = position
 }
