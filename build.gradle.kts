@@ -1,8 +1,9 @@
 plugins {
-  kotlin("multiplatform") apply false
-  id("com.android.library") apply false
-  kotlin("plugin.serialization") apply false
-  id("com.vanniktech.maven.publish") apply false
+  alias(libs.plugins.android.library) apply false
+  alias(libs.plugins.dokka) apply false
+  alias(libs.plugins.kotlin.multiplatform) apply false
+  alias(libs.plugins.kotlin.serialization) apply false
+  alias(libs.plugins.maven.publish) apply false
 }
 
 group = "xyz.mcxross.bcs"
