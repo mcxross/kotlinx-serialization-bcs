@@ -73,10 +73,7 @@ class BcsDecoder(
   override fun decodeSequentially(): Boolean = true
 
   override fun decodeCollectionSize(descriptor: SerialDescriptor): Int {
-    return inputBuffer.peek().toInt().also {
-      inputBuffer.skip(1)
-      elementsCount = it
-    }
+    return decodeUnit()
   }
 
   override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {

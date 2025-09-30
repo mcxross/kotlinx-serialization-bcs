@@ -34,4 +34,14 @@ class Serde {
     assertContentEquals(expected, encoding)
   }
 
+  @Test
+  fun canDecodeVectorOfLength128() {
+    val base = ByteArray(128) { it.toByte() }
+    val expectedLengthTag = listOf(0x80.toByte(), 0x01.toByte()).toByteArray()
+    val encoded = expectedLengthTag + base
+    val decoded = bcs.decodeFromByteArray<List<Byte>>(encoded)
+
+    val expected = base.toList()
+    assertContentEquals(expected, decoded)
+  }
 }
