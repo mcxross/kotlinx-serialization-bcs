@@ -1,13 +1,12 @@
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
-import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
-  kotlin("multiplatform")
-  id("com.android.library")
-  kotlin("plugin.serialization")
-  id("org.jetbrains.dokka") version "1.9.20"
-  id("com.vanniktech.maven.publish")
+  alias(libs.plugins.android.library)
+  alias(libs.plugins.dokka)
+  alias(libs.plugins.kotlin.multiplatform)
+  alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.maven.publish)
 }
 
 group = "xyz.mcxross.bcs"
@@ -29,10 +28,6 @@ kotlin {
   js {
     browser()
     nodejs()
-    compilations.all {
-      kotlinOptions.sourceMap = true
-      kotlinOptions.moduleKind = "umd"
-    }
   }
 
   jvm { testRuns["test"].executionTask.configure { useJUnitPlatform() } }
@@ -52,7 +47,7 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
-      implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.2")
+      implementation(libs.jetbrains.kotlinx.serialization.core)
     }
     commonTest.dependencies { implementation(kotlin("test")) }
   }
@@ -106,7 +101,7 @@ mavenPublishing {
     }
   }
 
-  publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
+  publishToMavenCentral(automaticRelease = true)
 
   signAllPublications()
 }
