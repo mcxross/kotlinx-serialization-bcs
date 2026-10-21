@@ -67,11 +67,11 @@ class BcsEncoder : AbstractEncoder() {
   override fun encodeFloat(value: Float) = throw NotSupported("Not supported: serialize Float")
 
   override fun encodeNull() {
-    encodeShort(0)
+    output.writeByte(0)
   }
 
   override fun encodeNotNullMark() {
-    encodeShort(1)
+    output.writeByte(1)
   }
 
   override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) {

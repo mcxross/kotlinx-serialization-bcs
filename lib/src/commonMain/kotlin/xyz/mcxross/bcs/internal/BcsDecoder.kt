@@ -49,7 +49,12 @@ class BcsDecoder(
     return null
   }
 
-  override fun decodeNotNullMark(): Boolean = inputBuffer.readShort().toInt() == 1
+  override fun decodeNotNullMark(): Boolean =
+    when (val tag = inputBuffer.readByte().toInt()) {
+      0 -> false
+      1 -> true
+      else -> throw NotSupported("Invalid Option tag: $tag")
+    }
 
   @Suppress("UNCHECKED_CAST")
   override fun <T> decodeSerializableValue(
