@@ -24,6 +24,7 @@ class OptionSerializer<T>(private val dataSerializer: KSerializer<T>) : KSeriali
     }
   }
 
+  @OptIn(ExperimentalSerializationApi::class)
   override fun deserialize(decoder: Decoder): Option<T> =
     if (decoder.decodeNotNullMark()) Option.Some(decoder.decodeSerializableValue(dataSerializer))
     else {
