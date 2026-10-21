@@ -21,7 +21,7 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
   fun takeNext(next: Int): ByteArray {
     require(next > 0) { "Number of bytes to take must be greater than 0!" }
     val result = ByteArray(next)
-    (0 ..< next).forEach { result[it] = requireNextByte() }
+    (0..<next).forEach { result[it] = requireNextByte() }
     return result
   }
 
