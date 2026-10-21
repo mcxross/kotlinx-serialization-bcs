@@ -4,12 +4,8 @@ import xyz.mcxross.bcs.ext.toByte
 
 class BcsDataOutputBuffer(initialCapacity: Int = 32) : BcsDataBuffer {
 
-  private var buffer = ByteArray(32)
+  private var buffer = ByteArray(initialCapacity)
   private var position = 0
-
-  init {
-    buffer = ByteArray(initialCapacity)
-  }
 
   private fun ensureCapacity(additionalBytes: Int) {
     if (position + additionalBytes > buffer.size) {
