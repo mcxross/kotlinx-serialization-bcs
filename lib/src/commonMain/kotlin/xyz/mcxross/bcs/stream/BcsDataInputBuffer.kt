@@ -6,7 +6,7 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
   private var position = 0
 
   fun skip(bytes: Int) {
-    if (position + bytes > byteArray.size) {
+    if (bytes < 0 || bytes > byteArray.size - position) {
       throw Exception("Cannot skip beyond end of buffer")
     }
     position += bytes
@@ -29,7 +29,7 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
   fun takeNext(next: Int): ByteArray {
     require(next > 0) { "Number of bytes to take must be greater than 0!" }
 
-    if (position + next > byteArray.size) {
+    if (next > byteArray.size - position) {
       throw Exception("Not enough bytes in buffer")
     }
 
@@ -64,7 +64,7 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
   fun readBoolean(): Boolean = requireNextByte().toBoolean()
 
   fun readShort(): Short {
-    if (position + 2 > byteArray.size) {
+    if (byteArray.size - position < 2) {
       throw Exception("Not enough bytes to read Short")
     }
 
@@ -75,7 +75,7 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
   }
 
   fun readInt(): Int {
-    if (position + 4 > byteArray.size) {
+    if (byteArray.size - position < 4) {
       throw Exception("Not enough bytes to read Int")
     }
 
@@ -88,7 +88,7 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
   }
 
   fun readLong(): Long {
-    if (position + 8 > byteArray.size) {
+    if (byteArray.size - position < 8) {
       throw Exception("Not enough bytes to read Long")
     }
 
@@ -114,7 +114,7 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
   fun readUTF(): String {
     val length = readULEB128()
 
-    if (position + length > byteArray.size) {
+    if (length < 0 || length > byteArray.size - position) {
       throw Exception("Not enough bytes to read UTF string of length $length")
     }
 
