@@ -15,7 +15,7 @@ import xyz.mcxross.bcs.exception.NotSupported
 import xyz.mcxross.bcs.stream.BcsDataOutputBuffer
 
 @OptIn(ExperimentalSerializationApi::class)
-class BcsEncoder : AbstractEncoder() {
+internal class BcsEncoder : AbstractEncoder() {
 
   val output = BcsDataOutputBuffer()
 

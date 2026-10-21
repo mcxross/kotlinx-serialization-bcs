@@ -2,7 +2,7 @@ package xyz.mcxross.bcs.stream
 
 import xyz.mcxross.bcs.ext.toByte
 
-class BcsDataOutputBuffer(initialCapacity: Int = 32) : BcsDataBuffer {
+internal class BcsDataOutputBuffer(initialCapacity: Int = 32) : BcsDataBuffer {
 
   private var buffer = ByteArray(initialCapacity)
   private var position = 0

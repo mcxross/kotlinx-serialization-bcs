@@ -1,5 +1,5 @@
 package xyz.mcxross.bcs.stream
 
-interface BcsDataBuffer {
+internal interface BcsDataBuffer {
   fun toByteArray(): ByteArray
 }

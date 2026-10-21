@@ -2,7 +2,7 @@ package xyz.mcxross.bcs.stream
 
 import xyz.mcxross.bcs.ext.toBoolean
 
-class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
+internal class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
   private var position = 0
 
   fun skip(bytes: Int) {

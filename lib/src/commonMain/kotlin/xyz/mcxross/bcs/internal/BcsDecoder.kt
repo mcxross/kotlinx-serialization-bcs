@@ -14,7 +14,7 @@ import xyz.mcxross.bcs.exception.NotSupported
 import xyz.mcxross.bcs.stream.BcsDataInputBuffer
 
 @OptIn(ExperimentalSerializationApi::class)
-class BcsDecoder(
+internal class BcsDecoder(
   private val depth: UInt = 0u,
   private val inputBuffer: BcsDataInputBuffer,
   private var elementsCount: Int = 0,
