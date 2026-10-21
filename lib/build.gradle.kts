@@ -59,7 +59,7 @@ android {
   namespace = "xyz.mcxross.bcs"
   defaultConfig {
     minSdk = 24
-    compileSdk = 33
+    compileSdk = 36
   }
 }
 
@@ -68,7 +68,7 @@ mavenPublishing {
 
   configure(
     KotlinMultiplatform(
-      javadocJar = JavadocJar.Dokka("dokkaHtml"),
+      javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
       sourcesJar = true,
       androidVariantsToPublish = listOf("debug", "release"),
     )
