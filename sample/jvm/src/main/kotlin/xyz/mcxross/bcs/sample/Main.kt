@@ -3,8 +3,7 @@ package xyz.mcxross.bcs.sample
 import kotlinx.serialization.Serializable
 import xyz.mcxross.bcs.Bcs
 
-@Serializable
-data class Data(val long: Long, val boolean: Boolean, val string: String)
+@Serializable data class Data(val long: Long, val boolean: Boolean, val string: String)
 
 fun main() {
 

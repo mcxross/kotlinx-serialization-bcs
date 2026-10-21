@@ -19,11 +19,9 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
     return byteArray[position]
   }
 
-  fun peekSafely(): Byte? =
-    if (position < byteArray.size) byteArray[position] else null
+  fun peekSafely(): Byte? = if (position < byteArray.size) byteArray[position] else null
 
-  fun nextByteOrNull(): Byte? =
-    if (position < byteArray.size) byteArray[position++] else null
+  fun nextByteOrNull(): Byte? = if (position < byteArray.size) byteArray[position++] else null
 
   fun requireNextByte(): Byte =
     if (position < byteArray.size) byteArray[position++] else throw Exception("End of stream")
@@ -103,8 +101,14 @@ class BcsDataInputBuffer(private val byteArray: ByteArray) : BcsDataBuffer {
     val b6 = byteArray[position++].toLong() and 0xFF
     val b7 = byteArray[position++].toLong() and 0xFF
 
-    return b0 or (b1 shl 8) or (b2 shl 16) or (b3 shl 24) or
-      (b4 shl 32) or (b5 shl 40) or (b6 shl 48) or (b7 shl 56)
+    return b0 or
+      (b1 shl 8) or
+      (b2 shl 16) or
+      (b3 shl 24) or
+      (b4 shl 32) or
+      (b5 shl 40) or
+      (b6 shl 48) or
+      (b7 shl 56)
   }
 
   fun readUTF(): String {
