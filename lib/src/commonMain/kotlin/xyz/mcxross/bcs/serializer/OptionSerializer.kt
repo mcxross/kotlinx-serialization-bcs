@@ -8,17 +8,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import xyz.mcxross.bcs.model.Option
 
-/**
- * Serializer for [Option].
- *
- * BCS encodes an optional value as a single tag byte — `0x00` for absent, `0x01` for present —
- * followed by the value itself when present. Rather than writing that tag directly, this delegates
- * to the encoder's null handling, so `Option<T>` and a plain nullable `T?` always encode to the
- * same bytes.
- *
- * Note that a `Some` wrapping `null` is indistinguishable from `None` on the wire, so
- * round-tripping `Some(null)` yields `None`.
- */
+/** Round-tripping a `Some` that wraps `null` yields [Option.None]. */
 class OptionSerializer<T>(private val dataSerializer: KSerializer<T>) : KSerializer<Option<T>> {
 
   override val descriptor: SerialDescriptor = dataSerializer.descriptor.nullable

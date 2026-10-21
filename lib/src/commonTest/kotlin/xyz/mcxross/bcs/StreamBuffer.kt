@@ -10,13 +10,7 @@ import kotlin.test.assertTrue
 import xyz.mcxross.bcs.stream.BcsDataInputBuffer
 import xyz.mcxross.bcs.stream.BcsDataOutputBuffer
 
-/**
- * Covers the stream buffers directly: ULEB128 continuation handling, output buffer capacity growth,
- * and the bounds checks that guard decoding of untrusted input.
- */
 class StreamBuffer {
-
-  // ---------- ULEB128 ----------
 
   @Test
   fun ulebRoundTripsAcrossContinuationBoundaries() {
@@ -48,7 +42,6 @@ class StreamBuffer {
 
   @Test
   fun ulebEncodesKnownMultiByteSequences() {
-    // 128 is the smallest value that needs a continuation byte.
     val one = BcsDataOutputBuffer()
     one.writeULEB128(128)
     assertContentEquals(byteArrayOf(0x80.toByte(), 0x01), one.toByteArray())
@@ -60,7 +53,6 @@ class StreamBuffer {
 
   @Test
   fun ulebDecodesContinuationBytesAboveSignedByteRange() {
-    // Every continuation byte is >= 0x80, i.e. negative as a signed Byte.
     assertEquals(
       268435455,
       BcsDataInputBuffer(byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte(), 0x7F))
@@ -75,8 +67,6 @@ class StreamBuffer {
     assertEquals("Unexpected end of ULEB128 sequence", e.message)
   }
 
-  // ---------- output buffer capacity growth ----------
-
   @Test
   fun growsPastDefaultInitialCapacity() {
     val out = BcsDataOutputBuffer()
@@ -88,8 +78,6 @@ class StreamBuffer {
 
   @Test
   fun growsWhenSingleWriteExceedsDoubling() {
-    // 1000 bytes into a 4-byte buffer: doubling alone is not enough, so the
-    // position + additionalBytes branch of ensureCapacity has to win.
     val out = BcsDataOutputBuffer(initialCapacity = 4)
     val big = ByteArray(1000) { (it % 251).toByte() }
     out.addAll(big)
@@ -106,7 +94,6 @@ class StreamBuffer {
 
   @Test
   fun multiByteWriteStraddlingCapacityKeepsAllBytes() {
-    // Leaves one free byte, then writes eight.
     val out = BcsDataOutputBuffer(initialCapacity = 8)
     repeat(7) { out.add(0x11) }
     out.writeLong(0x0102030405060708L)
@@ -135,8 +122,6 @@ class StreamBuffer {
     assertEquals(4, out.size())
     assertEquals(7, BcsDataInputBuffer(out.toByteArray()).readInt())
   }
-
-  // ---------- input buffer bounds checks ----------
 
   @Test
   fun skipToExactEndIsAllowedButBeyondThrows() {
@@ -180,15 +165,12 @@ class StreamBuffer {
 
   @Test
   fun readUTFRejectsLengthLongerThanBuffer() {
-    // Length prefix claims 10 bytes, only 2 follow.
     val e = assertFailsWith<Exception> { BcsDataInputBuffer(byteArrayOf(10, 0x61, 0x62)).readUTF() }
     assertEquals("Not enough bytes to read UTF string of length 10", e.message)
   }
 
   @Test
   fun readUTFRejectsLengthPrefixThatOverflowsPositionPlusLength() {
-    // position + length wraps negative for a hostile length, so the guard has to be
-    // written as length > size - position to fire at all.
     val out = BcsDataOutputBuffer()
     out.writeULEB128(Int.MAX_VALUE)
     out.addAll(byteArrayOf(0x61, 0x62))
@@ -198,7 +180,6 @@ class StreamBuffer {
 
   @Test
   fun readUTFRejectsLengthPrefixDecodingToNegative() {
-    // A 5-byte ULEB128 sequence can decode past Int range and come out negative.
     val hostile = byteArrayOf(0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte(), 0xFF.toByte(), 0x0F)
     val buffer = BcsDataInputBuffer(hostile + byteArrayOf(0x61, 0x62))
     val e = assertFailsWith<Exception> { buffer.readUTF() }
@@ -207,7 +188,6 @@ class StreamBuffer {
 
   @Test
   fun skipRejectsNegativeCount() {
-    // A negative skip would otherwise rewind the cursor.
     val buffer = BcsDataInputBuffer(byteArrayOf(1, 2, 3))
     buffer.skip(2)
     assertFailsWith<Exception> { buffer.skip(-2) }
@@ -233,13 +213,10 @@ class StreamBuffer {
 
   @Test
   fun fixedWidthReadsTreatBytesAsUnsigned() {
-    // All-ones must decode to -1 rather than being corrupted by sign extension.
     assertEquals(-1, BcsDataInputBuffer(ByteArray(2) { 0xFF.toByte() }).readShort().toInt())
     assertEquals(-1, BcsDataInputBuffer(ByteArray(4) { 0xFF.toByte() }).readInt())
     assertEquals(-1L, BcsDataInputBuffer(ByteArray(8) { 0xFF.toByte() }).readLong())
   }
-
-  // ---------- end to end through the public API ----------
 
   @Test
   fun encodesAndDecodesCollectionsAtUlebLengthBoundaries() {

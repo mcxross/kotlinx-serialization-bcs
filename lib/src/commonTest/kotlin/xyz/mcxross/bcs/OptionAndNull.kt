@@ -12,10 +12,6 @@ import xyz.mcxross.bcs.model.Option
 
 @Serializable private data class WithOption(val id: Int, val label: Option<String>)
 
-/**
- * BCS encodes an optional value as a single tag byte, 0x00 for absent and 0x01 for present. These
- * tests pin the exact bytes, since the tag width is part of the wire format.
- */
 class OptionAndNull {
 
   private val bcs = Bcs {}
@@ -27,7 +23,6 @@ class OptionAndNull {
 
   @Test
   fun presentValueIsTaggedWithASingleOneByte() {
-    // 0x01 tag, then 42 as a little-endian four byte Int.
     assertContentEquals(byteArrayOf(1, 42, 0, 0, 0), bcs.encodeToByteArray<Int?>(42))
   }
 
@@ -84,7 +79,6 @@ class OptionAndNull {
 
     val absent = WithNullable(7, null)
     assertEquals(absent, bcs.decodeFromByteArray<WithNullable>(bcs.encodeToByteArray(absent)))
-    // id as four little-endian bytes, then the absent tag.
     assertContentEquals(byteArrayOf(7, 0, 0, 0, 0), bcs.encodeToByteArray(absent))
   }
 
