@@ -1,8 +1,9 @@
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.SourcesJar
 
 plugins {
-  alias(libs.plugins.android.library)
+  alias(libs.plugins.android.kotlin.multiplatform.library)
   alias(libs.plugins.dokka)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.kotlin.serialization)
@@ -19,7 +20,12 @@ repositories {
 }
 
 kotlin {
-  androidTarget { publishLibraryVariants("release", "debug") }
+  android {
+    namespace = "xyz.mcxross.bcs"
+    compileSdk = 36
+    minSdk = 24
+    withHostTest {}
+  }
 
   iosX64()
   iosArm64()
@@ -42,21 +48,13 @@ kotlin {
   watchosArm64()
   watchosSimulatorArm64()
 
+  jvmToolchain(17)
+
   sourceSets {
     commonMain.dependencies {
       implementation(libs.jetbrains.kotlinx.serialization.core)
     }
     commonTest.dependencies { implementation(kotlin("test")) }
-  }
-}
-
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
-
-android {
-  namespace = "xyz.mcxross.bcs"
-  defaultConfig {
-    minSdk = 24
-    compileSdk = 36
   }
 }
 
@@ -66,8 +64,7 @@ mavenPublishing {
   configure(
     KotlinMultiplatform(
       javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
-      sourcesJar = true,
-      androidVariantsToPublish = listOf("debug", "release"),
+      sourcesJar = SourcesJar.Sources(),
     )
   )
 
